@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Котик Ульяна</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Pacifico&display=swap">
+<style>
+:root{--bg1:#ffe3ee;--bg2:#ffc2da;--card:#fff7fa;--ink:#6b2346;--soft:#b5587f;--btn:#ff7fb0;--btn2:#ff5c9a;--line:#f7b4cf;--bar:#ffe0ec;--glow:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#3a1428;--bg2:#561f3b;--card:#4a1a33;--ink:#ffe3ee;--soft:#ffb3d1;--btn:#e0558b;--btn2:#c93d77;--line:#7c3057;--bar:#66294a;--glow:#6a2848}}
+:root[data-theme="dark"]{--bg1:#3a1428;--bg2:#561f3b;--card:#4a1a33;--ink:#ffe3ee;--soft:#ffb3d1;--btn:#e0558b;--btn2:#c93d77;--line:#7c3057;--bar:#66294a;--glow:#6a2848}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;font-family:'Fredoka',system-ui,sans-serif;color:var(--ink);background:radial-gradient(circle at 20% 10%,var(--bg2) 0,transparent 45%),radial-gradient(circle at 85% 90%,var(--bg2) 0,transparent 40%),var(--bg1);background-color:var(--bg1);display:flex;justify-content:center;padding:18px 14px 32px;overflow-x:hidden}
+main{position:relative;z-index:1;width:100%;max-width:500px;text-align:center}
+.bgfx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.bgfx span{position:absolute;bottom:-50px;opacity:0;animation:rise linear infinite}
+#dim{position:fixed;inset:0;background:#0c0828;opacity:0;transition:opacity .6s;pointer-events:none;z-index:0}
+body.dark #dim{opacity:.9}
+body.dark .sub,body.dark .foot,body.dark .tag{color:#ffd3e6}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.tag{font-size:14px;font-weight:500;color:var(--soft)}
+.top div{display:flex;gap:8px}
+h1{font-family:'Pacifico','Brush Script MT',cursive;font-weight:400;font-size:clamp(40px,12vw,56px);margin:4px 0 0;line-height:1.1;background:linear-gradient(90deg,#ff7fb0,#e0407f);-webkit-background-clip:text;background-clip:text;color:transparent;padding:.08em .15em;display:inline-block;filter:drop-shadow(0 4px 8px rgba(255,92,154,.25))}
+.sub{margin:2px 0 14px;color:var(--soft);font-size:16px}
+.stage{position:relative;background:radial-gradient(ellipse at 50% 78%,var(--glow) 0,var(--card) 64%);border:2px solid var(--line);border-radius:36px;padding:60px 10px 8px;box-shadow:0 24px 50px -12px rgba(255,92,154,.35),inset 0 0 0 6px rgba(255,255,255,.3);overflow:hidden;animation:enter .9s cubic-bezier(.2,1.2,.3,1)}
+.lights{position:absolute;inset:-60%;opacity:0;transition:opacity .4s;pointer-events:none;z-index:1;background:conic-gradient(from 0deg at 50% 50%,rgba(255,92,154,.4),rgba(255,226,110,.35),rgba(110,220,255,.35),rgba(180,120,255,.4),rgba(255,92,154,.4));animation:spinL 3s linear infinite}
+.stage.disco .lights{opacity:1}
+.night{position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;transition:opacity .5s;font-size:34px;text-align:right;padding:14px 20px;background:radial-gradient(circle at 18% 22%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 64% 12%,#fff 0 1px,transparent 2px),radial-gradient(circle at 36% 40%,#fff 0 1px,transparent 2px),radial-gradient(circle at 88% 36%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 10% 62%,#fff 0 1px,transparent 2px),radial-gradient(circle at 78% 70%,#fff 0 1px,transparent 2px),rgba(12,8,38,.74)}
+.night.on{opacity:1}
+.bubble{position:absolute;z-index:6;top:14px;left:50%;transform:translateX(-50%);max-width:90%;background:#fff;color:#6b2346;border:2px solid var(--line);border-radius:20px;padding:7px 16px;font-size:17px;font-weight:500;white-space:nowrap}
+.bubble.pop{animation:pop .35s}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-9px;width:14px;height:14px;background:#fff;border-right:2px solid var(--line);border-bottom:2px solid var(--line);transform:translateX(-50%) rotate(45deg)}
+svg.cat{position:relative;z-index:2;width:100%;max-width:340px;height:auto;display:block;margin:0 auto;cursor:pointer;touch-action:manipulation;overflow:visible}
+.cat *{transform-box:fill-box}
+.hand{position:absolute;z-index:5;font-size:46px;opacity:0;pointer-events:none;transition:opacity .2s;filter:drop-shadow(0 4px 4px rgba(0,0,0,.2))}
+.hand.show{opacity:1}
+.hand.stroke{animation:hStroke .7s ease-in-out 3}
+.hand.scr{animation:hScr .14s linear 14}
+.ball{position:absolute;z-index:3;bottom:16px;left:calc(50% - 16px);font-size:32px;opacity:0;pointer-events:none}
+.ball i{display:inline-block;font-style:normal;animation:ballY .4s ease-out infinite alternate}
+.ball.go{animation:ballX 3.3s ease-in-out}
+.fx{position:absolute;z-index:5;font-size:30px;pointer-events:none;animation:floatUp 1.5s ease-out forwards}
+.fx.drop{animation:fall .8s ease-in forwards}
+.fx.kiss{font-size:34px;animation:kissFly 1.5s ease-out forwards}
+.meters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 14px}
+.m{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:8px 12px;text-align:left;font-size:14px}
+.bar{height:12px;background:var(--bar);border-radius:99px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff9ec6,var(--btn2));border-radius:99px;transition:width .5s}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+.btns button{font-size:16px;font-weight:600;color:var(--btn2);background:var(--card);border:2px solid var(--line);border-radius:20px;padding:15px 8px;box-shadow:0 6px 14px -4px rgba(255,92,154,.35);transition:transform .15s,box-shadow .15s}
+.btns button:hover{transform:translateY(-3px);box-shadow:0 12px 20px -6px rgba(255,92,154,.45)}
+.btns button:active{transform:scale(.96)}
+.btns button[data-a="pet"],.btns button[data-a="kiss"]{background:linear-gradient(180deg,var(--btn),var(--btn2));color:#fff;border-color:transparent}
+.btns .wide{grid-column:1/-1;background:var(--bar)}
+.chip{font-size:13px;font-weight:500;padding:8px 12px;border-radius:99px;background:var(--card);color:var(--ink);border:1.5px solid var(--line);box-shadow:0 2px 8px rgba(255,92,154,.15)}
+.chip[aria-pressed="true"]{background:var(--btn2);color:#fff;border-color:var(--btn2)}
+button:focus-visible,svg.cat:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.foot{margin-top:16px;color:var(--soft);font-size:14px}
+
+/* --- лицо --- */
+.eh,.es,.ek,.ba,.mOpen,.mKiss,.mFrown,.mSick,#sweat,#puke{display:none}
+.cat[data-mood="happy"] .eo,.cat[data-mood="sleep"] .eo,.cat[data-mood="sick"] .eo,.cat[data-mood="kiss"] .eo{display:none}
+.cat[data-mood="happy"] .eh,.cat[data-mood="kiss"] .eh{display:block}
+.cat[data-mood="sleep"] .es{display:block}
+.cat[data-mood="sick"] .ek{display:block}
+.cat[data-mood="angry"] .ba{display:block}
+.cat[data-mood="kiss"] #mouth,.cat[data-mood="angry"] #mouth,.cat[data-mood="sick"] #mouth,.cat[data-mouth="open"] #mouth{display:none}
+.cat[data-mood="kiss"] .mKiss{display:block}
+.cat[data-mood="angry"] .mFrown{display:block}
+.cat[data-mood="sick"] .mSick{display:block}
+.cat[data-mouth="open"] .mOpen{display:block}
+.cat[data-mouth="open"] .mSick,.cat[data-mouth="open"] .mKiss,.cat[data-mouth="open"] .mFrown{display:none}
+.cat .blink{animation:blink 4.5s infinite;transform-origin:50% 50%}
+.cat[data-mood="happy"] .cheek,.cat[data-mood="kiss"] .cheek{opacity:.95}
+#tintG,#tintR{opacity:0;transition:opacity .6s}
+.cat.sweaty #sweat{display:block;animation:drip 1.2s ease-in infinite}
+#puke circle{opacity:0;transform-origin:50% 50%}
+.cat.vomit #puke{display:block}
+.cat.vomit #puke circle{animation:spew .9s ease-out forwards}
+#puddle{opacity:0}
+.cat.vomit #puddle{animation:puddle 4s .6s forwards}
+#zzz{opacity:0;transition:opacity .4s}
+.cat[data-mood="sleep"] #zzz{opacity:1}
+.z{fill:var(--soft);font:600 26px Fredoka,sans-serif;animation:zz 2.4s ease-in-out infinite}
+.z2{animation-delay:.5s;font-size:20px}.z3{animation-delay:1s;font-size:15px}
+
+/* --- каркас кота --- */
+#rig{transform-origin:50% 100%;animation:breathe 3.2s ease-in-out infinite}
+#tail{transform-origin:10% 90%;animation:wag 2.6s ease-in-out infinite}
+#head{transform-origin:50% 90%;animation:tilt 7s ease-in-out infinite}
+#armL,#armR{transform-origin:50% 8%;transition:transform .3s}
+#footL,#footR{transform-origin:50% 100%}
+#torso{transform-origin:50% 100%;transition:transform .6s}
+.ear{transform-origin:50% 100%}.ear.tw{animation:twitch .4s}
+#eyes{transition:transform .15s}
+.cat[data-mood="happy"] #tail{animation-duration:.8s}
+.cat.fat1 #torso{transform:scale(1.07,1.03)}
+.cat.fat2 #torso{transform:scale(1.16,1.08)}
+.cat.fat3 #torso{transform:scale(1.28,1.14)}
+
+/* --- действия --- */
+.cat.petting #head{animation:pHead .7s ease-in-out 3}
+.cat.scratching #head{animation:sHead 2s ease-in-out}
+.cat.scratching #footR{animation:kick .14s linear 14}
+.cat.kiss #head{animation:kHead 1.8s ease-in-out}
+.cat.kiss #armR{animation:kArm 1.8s ease-in-out}
+.cat.paw #armR{animation:pawArm 2.2s ease-in-out}
+.cat.paw #head{animation:tiltPaw 2.2s ease-in-out}
+.cat.chew #head{animation:chewHead .25s 6}
+.cat.chew .mOpen{animation:chewMouth .25s 6}
+.cat.play{animation:pj 3.3s ease-in-out}
+.cat.play #armL{animation:swatL .5s 7}
+.cat.play #armR{animation:swatR .5s .25s 6}
+.cat.play #head{animation:playHead 3.3s ease-in-out}
+.cat.play #eyes{animation:eyeTrack 3.3s ease-in-out}
+.cat.hug{animation:hugCat 2.5s ease-in-out;transform-origin:50% 100%}
+.cat.hug #armL{animation:hugL 2.5s ease-in-out}
+.cat.hug #armR{animation:hugR 2.5s ease-in-out}
+.cat.hug #head{animation:hugHead 2.5s ease-in-out}
+.cat.twirl{animation:twirl .85s ease-in-out}
+.cat.dance{animation:sway 1.36s ease-in-out infinite}
+.cat.dance #rig{animation:dRig 1.36s ease-in-out infinite}
+.cat.dance #armL{animation:dArmL 1.36s ease-in-out infinite}
+.cat.dance #armR{animation:dArmR 1.36s ease-in-out infinite}
+.cat.dance #footL{animation:dFootL 1.36s ease-in-out infinite}
+.cat.dance #footR{animation:dFootR 1.36s ease-in-out infinite}
+.cat.dance #head{animation:dHead 1.36s ease-in-out infinite}
+.cat.dance #tail{animation:wag .5s ease-in-out infinite}
+.cat.yawn #head{animation:yawnHead 1.8s ease-in-out}
+.cat.yawn #armL{animation:stretchL 1.8s ease-in-out}
+.cat.yawn #armR{animation:stretchR 1.8s ease-in-out}
+.cat.wash #armR{animation:washArm 2.3s ease-in-out}
+.cat.wash #head{animation:washHead 2.3s ease-in-out}
+.cat.look #eyes{animation:lookAround 2.4s ease-in-out}
+.cat.angry{animation:shake .1s linear infinite}
+.cat.angry #head{animation:aHead .3s ease-in-out infinite}
+.cat.angry #footL{animation:stomp .3s ease-in infinite}
+.cat.angry #footR{animation:stomp .3s ease-in .15s infinite}
+.cat.angry #armL{animation:fistL .3s ease-in-out infinite}
+.cat.angry #armR{animation:fistR .3s ease-in-out infinite}
+.cat.angry #tail{animation:wag .22s ease-in-out infinite}
+.cat.retch #rig{animation:retch .22s ease-in-out infinite}
+.cat.retch #head{animation:retchHead .22s ease-in-out infinite}
+.cat.sleeping #head{animation:none;transform:translate(0,30px) rotate(-7deg);transition:transform .8s}
+.cat.sleeping #armL{transform:rotate(-12deg)}
+.cat.sleeping #armR{transform:rotate(12deg)}
+.cat.sleeping #tail{animation:none;transform:rotate(-20deg)}
+.cat.sleeping #rig{animation-duration:5s}
+
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.02,1.03)}}
+@keyframes wag{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(14deg)}}
+@keyframes tilt{0%,45%,100%{transform:rotate(0)}55%,75%{transform:rotate(-4deg)}85%{transform:rotate(3deg)}}
+@keyframes twitch{0%,100%{transform:rotate(0)}30%{transform:rotate(-12deg)}60%{transform:rotate(8deg)}}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+@keyframes pop{0%{transform:translateX(-50%) scale(.85)}60%{transform:translateX(-50%) scale(1.07)}100%{transform:translateX(-50%) scale(1)}}
+@keyframes enter{0%{opacity:0;transform:translateY(28px) scale(.94)}100%{opacity:1;transform:none}}
+@keyframes rise{0%{transform:translateY(0) rotate(0);opacity:0}10%{opacity:.55}90%{opacity:.4}100%{transform:translateY(-115vh) rotate(40deg);opacity:0}}
+@keyframes floatUp{0%{opacity:0;transform:translate(0,0) scale(.5)}15%{opacity:1}100%{opacity:0;transform:translate(var(--dx,0),-170px) scale(1.4)}}
+@keyframes fall{0%{opacity:0;transform:translateY(-120px) rotate(-30deg)}30%{opacity:1}85%{opacity:1;transform:translateY(0) rotate(10deg)}100%{opacity:0;transform:translateY(6px) scale(.2)}}
+@keyframes kissFly{0%{opacity:0;transform:translate(0,0) scale(.5)}15%{opacity:1}100%{opacity:0;transform:translate(0,-190px) scale(2.6) rotate(-12deg)}}
+@keyframes spinL{to{transform:rotate(360deg)}}
+@keyframes zz{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-8px);opacity:1}}
+@keyframes hStroke{0%,100%{transform:translateX(-46px) rotate(-14deg)}50%{transform:translateX(46px) rotate(14deg)}}
+@keyframes hScr{0%,100%{transform:translate(-8px,0) rotate(-6deg)}50%{transform:translate(8px,4px) rotate(6deg)}}
+@keyframes ballX{0%{opacity:1;transform:translateX(-150px)}50%{opacity:1;transform:translateX(150px)}100%{opacity:1;transform:translateX(-150px)}}
+@keyframes ballY{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(-46px) rotate(180deg)}}
+@keyframes pHead{0%,100%{transform:translate(-5px,7px) rotate(-4deg)}50%{transform:translate(5px,7px) rotate(4deg)}}
+@keyframes sHead{0%,100%{transform:none}12%,88%{transform:rotate(8deg) translateY(-6px)}}
+@keyframes kick{0%,100%{transform:rotate(0)}50%{transform:rotate(-16deg) translateY(-7px)}}
+@keyframes kHead{0%,100%{transform:none}25%,65%{transform:scale(1.07) translateY(-6px)}}
+@keyframes kArm{0%,100%{transform:none}22%,50%{transform:rotate(-165deg)}65%{transform:rotate(-120deg)}}
+@keyframes pawArm{0%,100%{transform:rotate(0)}15%{transform:rotate(-78deg)}25%,45%,65%{transform:rotate(-70deg)}35%,55%,75%{transform:rotate(-88deg)}90%{transform:rotate(-78deg)}}
+@keyframes tiltPaw{0%,100%{transform:none}15%,85%{transform:rotate(-5deg) translateX(-4px)}}
+@keyframes chewHead{0%,100%{transform:scale(1)}50%{transform:scale(1.03,.97)}}
+@keyframes chewMouth{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.35)}}
+@keyframes swatL{0%,100%{transform:rotate(0)}40%{transform:rotate(95deg)}}
+@keyframes swatR{0%,100%{transform:rotate(0)}40%{transform:rotate(-95deg)}}
+@keyframes pj{0%,100%{transform:translate(-20px,0)}25%{transform:translate(0,-24px)}50%{transform:translate(20px,0)}75%{transform:translate(0,-24px)}}
+@keyframes playHead{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@keyframes eyeTrack{0%,100%{transform:translate(-7px,3px)}50%{transform:translate(7px,3px)}}
+@keyframes hugCat{0%,100%{transform:scale(1)}25%,75%{transform:scale(1.07) translateY(-6px)}}
+@keyframes hugL{0%,100%{transform:rotate(0)}22%,78%{transform:rotate(-64deg)}}
+@keyframes hugR{0%,100%{transform:rotate(0)}22%,78%{transform:rotate(64deg)}}
+@keyframes hugHead{0%,100%{transform:none}25%,75%{transform:rotate(-7deg) translate(-6px,4px)}}
+@keyframes twirl{0%{transform:scaleX(1)}50%{transform:scaleX(-1) translateY(-14px)}100%{transform:scaleX(1)}}
+@keyframes sway{0%,100%{transform:translateX(-14px)}50%{transform:translateX(14px)}}
+@keyframes dRig{0%,100%{transform:translateY(0) rotate(-3deg)}25%{transform:translateY(-16px)}50%{transform:translateY(0) rotate(3deg)}75%{transform:translateY(-16px)}}
+@keyframes dArmL{0%,100%{transform:rotate(125deg)}50%{transform:rotate(25deg)}}
+@keyframes dArmR{0%,100%{transform:rotate(-25deg)}50%{transform:rotate(-125deg)}}
+@keyframes dFootL{0%,50%,100%{transform:translateY(0)}25%{transform:translateY(-16px) rotate(-10deg)}}
+@keyframes dFootR{0%,50%,100%{transform:translateY(0)}75%{transform:translateY(-16px) rotate(10deg)}}
+@keyframes dHead{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg) translateY(-6px)}}
+@keyframes yawnHead{0%,100%{transform:none}25%,75%{transform:rotate(-7deg) translateY(-5px) scale(1.03)}}
+@keyframes stretchL{0%,100%{transform:rotate(0)}25%,75%{transform:rotate(165deg)}}
+@keyframes stretchR{0%,100%{transform:rotate(0)}25%,75%{transform:rotate(-165deg)}}
+@keyframes washArm{0%,100%{transform:none}18%,80%{transform:rotate(-150deg)}30%,54%{transform:rotate(-142deg)}42%,66%{transform:rotate(-156deg)}}
+@keyframes washHead{0%,100%{transform:none}18%,80%{transform:rotate(5deg) translateY(4px)}}
+@keyframes lookAround{0%,100%{transform:translate(0,0)}25%{transform:translate(-8px,1px)}60%{transform:translate(8px,-2px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px) rotate(-.6deg)}75%{transform:translateX(3px) rotate(.6deg)}}
+@keyframes aHead{0%,100%{transform:scale(1.02) translateY(2px)}50%{transform:scale(1.05) translateY(-2px) rotate(2deg)}}
+@keyframes stomp{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes fistL{0%,100%{transform:rotate(14deg)}50%{transform:rotate(-8deg)}}
+@keyframes fistR{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(8deg)}}
+@keyframes retch{0%,100%{transform:scale(1.04,1)}50%{transform:scale(.97,1.05) translateY(4px)}}
+@keyframes retchHead{0%,100%{transform:none}50%{transform:translate(0,16px) rotate(8deg)}}
+@keyframes spew{0%{opacity:1;transform:translate(0,0) scale(.3)}100%{opacity:1;transform:translate(var(--x),var(--y)) scale(1)}}
+@keyframes puddle{0%{opacity:0;transform:scale(.1,.3)}12%{opacity:.95;transform:scale(1)}80%{opacity:.95;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+@keyframes drip{0%{transform:translateY(0);opacity:1}100%{transform:translateY(14px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.cat,.cat *,.bgfx span,.lights,.stage,.hand,.ball,.ball i{animation-duration:.01s!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<div class="bgfx" id="bgfx" aria-hidden="true"></div>
+<div id="dim" aria-hidden="true"></div>
+<main>
+  <div class="top"><span class="tag">Ульяна и её уголок</span><div><button class="chip" id="musicBtn" aria-pressed="false">🎵 Музыка: выкл</button><button class="chip" id="sfxBtn" aria-pressed="true">🔊 Звуки</button></div></div>
+  <h1>Ульяна</h1>
+  <p class="sub">самый милый котик на свете</p>
+
+  <section class="stage" id="stage">
+    <div class="lights" aria-hidden="true"></div>
+    <div class="night" id="night" aria-hidden="true">🌙</div>
+    <div class="bubble" id="bubble">Мяу! Привет!</div>
+    <svg class="cat" id="cat" data-mood="normal" data-mouth="smile" viewBox="0 0 300 300" role="img" aria-label="Котик Ульяна" tabindex="0">
+      <ellipse cx="150" cy="294" rx="100" ry="8" fill="rgba(160,30,90,.18)"/>
+      <ellipse id="puddle" cx="150" cy="292" rx="70" ry="9" fill="#9fcf55"/>
+      <g id="tail"><path d="M212 258 C268 262 282 214 262 182 C256 172 244 178 250 190 C262 212 252 240 210 240Z" fill="#fff" stroke="#f3a6c0" stroke-width="3"/><path d="M262 182 C256 172 244 178 250 190 C254 197 258 196 262 190Z" fill="#ffb3d1"/></g>
+      <g id="rig">
+        <g id="footL"><ellipse cx="90" cy="288" rx="24" ry="12" fill="#fff" stroke="#f3a6c0" stroke-width="3"/><circle cx="80" cy="290" r="3" fill="#ffb3d1"/><circle cx="90" cy="292" r="3" fill="#ffb3d1"/><circle cx="100" cy="290" r="3" fill="#ffb3d1"/></g>
+        <g id="footR"><ellipse cx="210" cy="288" rx="24" ry="12" fill="#fff" stroke="#f3a6c0" stroke-width="3"/><circle cx="200" cy="290" r="3" fill="#ffb3d1"/><circle cx="210" cy="292" r="3" fill="#ffb3d1"/><circle cx="220" cy="290" r="3" fill="#ffb3d1"/></g>
+        <g id="torso"><ellipse cx="150" cy="232" rx="72" ry="58" fill="#fff" stroke="#f3a6c0" stroke-width="3"/><ellipse cx="150" cy="240" rx="40" ry="36" fill="#ffeaf3"/></g>
+        <g id="armL"><ellipse cx="106" cy="244" rx="16" ry="44" fill="#fff" stroke="#f3a6c0" stroke-width="3"/><ellipse cx="106" cy="278" rx="8" ry="6" fill="#ffb3d1"/></g>
+        <g id="armR"><ellipse cx="194" cy="244" rx="16" ry="44" fill="#fff" stroke="#f3a6c0" stroke-width="3"/><ellipse cx="194" cy="278" rx="8" ry="6" fill="#ffb3d1"/></g>
+        <g id="head">
+          <g id="earL" class="ear"><polygon points="82,92 76,26 128,68" fill="#fff" stroke="#f3a6c0" stroke-width="3" stroke-linejoin="round"/><polygon points="90,80 87,44 114,68" fill="#ffb3d1"/></g>
+          <g id="earR" class="ear"><polygon points="218,92 224,26 172,68" fill="#fff" stroke="#f3a6c0" stroke-width="3" stroke-linejoin="round"/><polygon points="210,80 213,44 186,68" fill="#ffb3d1"/></g>
+          <ellipse cx="150" cy="134" rx="80" ry="68" fill="#fff" stroke="#f3a6c0" stroke-width="3"/>
+          <ellipse id="tintG" cx="150" cy="134" rx="79" ry="67" fill="#7fc94a"/>
+          <ellipse id="tintR" cx="150" cy="134" rx="79" ry="67" fill="#ff4d4d"/>
+          <g transform="translate(206 62) rotate(18)"><path d="M0 0 L-24 -14 L-24 14Z M0 0 L24 -14 L24 14Z" fill="#ff5c9a"/><circle r="6" fill="#ff3d86"/></g>
+          <g class="eo" id="eyes"><g class="blink"><ellipse cx="116" cy="132" rx="10" ry="12" fill="#4a2038"/><circle cx="120" cy="127" r="4" fill="#fff"/></g><g class="blink"><ellipse cx="184" cy="132" rx="10" ry="12" fill="#4a2038"/><circle cx="188" cy="127" r="4" fill="#fff"/></g></g>
+          <g class="eh" fill="none" stroke="#4a2038" stroke-width="5" stroke-linecap="round"><path d="M103 136 Q116 118 129 136"/><path d="M171 136 Q184 118 197 136"/></g>
+          <g class="es" fill="none" stroke="#4a2038" stroke-width="5" stroke-linecap="round"><path d="M104 132 Q116 142 128 132"/><path d="M172 132 Q184 142 196 132"/></g>
+          <g class="ek" fill="none" stroke="#2f5b1f" stroke-width="5" stroke-linecap="round"><path d="M106 122 L126 142 M126 122 L106 142"/><path d="M174 122 L194 142 M194 122 L174 142"/></g>
+          <g class="ba" stroke="#4a2038" stroke-width="6" stroke-linecap="round"><path d="M96 110 L132 124"/><path d="M204 110 L168 124"/></g>
+          <ellipse class="cheek" cx="92" cy="156" rx="15" ry="9" fill="#ff9ec0" opacity=".55"/>
+          <ellipse class="cheek" cx="208" cy="156" rx="15" ry="9" fill="#ff9ec0" opacity=".55"/>
+          <path d="M143 150 L157 150 L150 159Z" fill="#ff7fa8" stroke="#ff7fa8" stroke-width="2" stroke-linejoin="round"/>
+          <g id="mouth" fill="none" stroke="#4a2038" stroke-width="3" stroke-linecap="round"><path d="M150 159 Q150 170 138 169"/><path d="M150 159 Q150 170 162 169"/></g>
+          <ellipse class="mOpen" cx="150" cy="171" rx="13" ry="11" fill="#7a2a4a"/><ellipse class="mOpen" cx="150" cy="177" rx="7" ry="4" fill="#ff8fb0"/>
+          <circle class="mKiss" cx="150" cy="168" r="6" fill="#ff7fa8"/>
+          <path class="mFrown" d="M132 176 Q150 160 168 176" fill="none" stroke="#4a2038" stroke-width="4" stroke-linecap="round"/>
+          <path class="mSick" d="M132 172 q9 -9 18 0 q9 9 18 0" fill="none" stroke="#4a2038" stroke-width="3.5" stroke-linecap="round"/>
+          <path id="sweat" d="M226 96 q-9 14 0 20 q9 -6 0 -20z" fill="#7fd3ff"/>
+          <g stroke="#d99ab5" stroke-width="2.5" stroke-linecap="round"><path d="M78 150 L48 144"/><path d="M78 160 L48 164"/><path d="M222 150 L252 144"/><path d="M222 160 L252 164"/></g>
+        </g>
+      </g>
+      <g id="puke">
+        <circle cx="150" cy="172" r="8" fill="#a9d44f" style="--x:-8px;--y:118px;animation-delay:0s"/>
+        <circle cx="150" cy="172" r="6" fill="#bfe066" style="--x:16px;--y:112px;animation-delay:.08s"/>
+        <circle cx="150" cy="172" r="9" fill="#8fc94a" style="--x:-30px;--y:116px;animation-delay:.15s"/>
+        <circle cx="150" cy="172" r="5" fill="#d3e87c" style="--x:36px;--y:114px;animation-delay:.2s"/>
+        <circle cx="150" cy="172" r="7" fill="#a9d44f" style="--x:2px;--y:120px;animation-delay:.28s"/>
+        <circle cx="150" cy="172" r="6" fill="#8fc94a" style="--x:-20px;--y:110px;animation-delay:.36s"/>
+        <circle cx="150" cy="172" r="8" fill="#bfe066" style="--x:24px;--y:118px;animation-delay:.44s"/>
+        <circle cx="150" cy="172" r="5" fill="#a9d44f" style="--x:-4px;--y:114px;animation-delay:.52s"/>
+      </g>
+      <g id="zzz"><text x="250" y="112" class="z z1">Z</text><text x="264" y="86" class="z z2">z</text><text x="274" y="62" class="z z3">z</text></g>
+    </svg>
+    <span class="hand" id="hand">🖐️</span>
+    <span class="ball" id="ball"><i>🧶</i></span>
+  </section>
+
+  <div class="meters">
+    <div class="m">Любовь 💗<div class="bar"><i id="love"></i></div></div>
+    <div class="m">Сытость 🐟<div class="bar"><i id="food"></i></div></div>
+  </div>
+
+  <div class="btns">
+    <button data-a="pet">Погладить 🤍</button>
+    <button data-a="kiss">Поцелуй 💋</button>
+    <button data-a="scratch">Почесать 🐾</button>
+    <button data-a="paw">Дать лапку 🐱</button>
+    <button data-a="feed">Покормить 🐟</button>
+    <button data-a="play">Поиграть 🧶</button>
+    <button data-a="hug">Обнять 🤗</button>
+    <button data-a="dance">Потанцевать 💃</button>
+    <button data-a="sleep" class="wide">Выключить свет 🌙</button>
+  </div>
+  <p class="foot">Нажимай на кнопки или прямо на Ульяну. Музыка включится после первого касания 🎵</p>
+</main>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var cat=$('cat'),stage=$('stage'),bubble=$('bubble'),loveEl=$('love'),foodEl=$('food'),hand=$('hand'),
+      night=$('night'),ball=$('ball'),tintG=$('tintG'),tintR=$('tintR'),eyes=$('eyes'),earL=$('earL'),earR=$('earR'),
+      musicBtn=$('musicBtn'),sfxBtn=$('sfxBtn'),sleepBtn=document.querySelector('[data-a=sleep]');
+  var love=10,food=60,stuff=0,asleep=false,busy=false,moodT=null,actT=null,handT=null,danceIv=null,tok=0,sleepLog=[];
+  var ACTS=['petting','scratching','kiss','paw','chew','play','hug','dance','twirl','yawn','wash','look','angry','retch'];
+  var say={
+    pet:['Мурррр… 💗','Ещё-ещё, пожалуйста!','Как приятно, мур-мур','Я твоя самая счастливая кошка!'],
+    kiss:['Ой, я вся покраснела 🥰','Мяу! Я тоже тебя целую!','Чмок-чмок! 💋'],
+    scratch:['Да-да, вот тут! Мррр','Ох, как хорошо под подбородком','Чешется именно там 😻'],
+    paw:['Держи лапку! 🐾','Мы теперь друзья навсегда','Дружба! Мяу!'],
+    feed:['Ням-ням-ням 🐟','Мяу, вкуснятина!','Спасибо, я обожаю рыбку!'],
+    play:['Лови клубочек! 🧶','Прыг-скок! Мяу!','Не уйдёшь от меня!'],
+    hug:['Обнимашки! Мур-мур 🤗','Так тепло и уютно'],
+    dance:['Танцуем! Мяу-мяу 💃','Смотри, как я умею!'],
+    sleep:['Щёлк! Спокойной ночи 🌙','Мур-р… сплю… zzz'],
+    wake:['Мяу! Свет включили! ☀️','Уже утро? 😸'],
+    hungry:['Мяу… я проголодалась 🥺']
+  };
+  function pick(k){var a=say[k];return a[Math.floor(Math.random()*a.length)]}
+  function talk(t){bubble.textContent=t;bubble.classList.remove('pop');void bubble.offsetWidth;bubble.classList.add('pop')}
+  function bars(){loveEl.style.width=love+'%';foodEl.style.width=food+'%'}
+  function mood(m,ms){cat.dataset.mood=m;clearTimeout(moodT);if(ms&&m!=='normal'&&m!=='sleep')moodT=setTimeout(function(){cat.dataset.mood=asleep?'sleep':'normal'},ms)}
+  function mouth(m,ms){cat.dataset.mouth=m;if(ms)setTimeout(function(){if(cat.dataset.mouth===m)cat.dataset.mouth='smile'},ms)}
+  function act(c,ms){ACTS.forEach(function(a){cat.classList.remove(a)});void cat.getBoundingClientRect();cat.classList.add(c);clearTimeout(actT);actT=setTimeout(function(){cat.classList.remove(c)},ms)}
+  function pos(px,py){var r=cat.getBoundingClientRect(),s=stage.getBoundingClientRect();return{x:r.left-s.left+r.width*px,y:r.top-s.top+r.height*py}}
+  function fx(e,x,y,cls){
+    var s=document.createElement('span');s.className='fx'+(cls?' '+cls:'');s.textContent=e;
+    s.style.left=x+'px';s.style.top=y+'px';s.style.setProperty('--dx',(Math.random()*90-45)+'px');
+    stage.appendChild(s);setTimeout(function(){s.remove()},1700);
+  }
+  function burst(e,n){
+    var w=stage.clientWidth,h=stage.clientHeight;
+    for(var i=0;i<n;i++)(function(i){setTimeout(function(){fx(e,w*0.3+Math.random()*w*0.4,h*0.55+Math.random()*h*0.2)},i*140)})(i);
+  }
+  function addLove(n){love=Math.min(100,love+n);bars();if(love===100&&n>0){talk('Я так сильно тебя люблю! 💖💖💖');burst('💖',7)}}
+  function showHand(kind){
+    var p=pos(.5,kind==='pet'?.1:.6);
+    hand.textContent=kind==='pet'?'🖐️':'☝️';
+    hand.style.left=(p.x-23)+'px';hand.style.top=(p.y-26)+'px';
+    hand.className='hand show '+(kind==='pet'?'stroke':'scr');
+    clearTimeout(handT);handT=setTimeout(function(){hand.className='hand'},kind==='pet'?2200:2100);
+  }
+  function setSleep(on){
+    asleep=on;night.classList.toggle('on',on);document.body.classList.toggle('dark',on);
+    cat.classList.toggle('sleeping',on);mood(on?'sleep':'normal');
+    sleepBtn.textContent=on?'Включить свет ☀️':'Выключить свет 🌙';
+  }
+  function wake(){if(asleep)setSleep(false)}
+  function fat(n){
+    ['fat1','fat2','fat3'].forEach(function(c){cat.classList.remove(c)});
+    if(n)cat.classList.add('fat'+n);
+    tintG.style.opacity=[0,.18,.42,.7][n]||0;
+    cat.classList.toggle('sweaty',n>=2);
+  }
+  function vomit(){
+    busy=true;mood('sick');talk('Бульк… мне плохо… 🤢');act('retch',1500);snd('retch');
+    setTimeout(function(){
+      mouth('open');cat.classList.add('vomit');snd('splat');talk('БЛЕЕЕ! 🤮');
+      var p=pos(.5,.57);fx('💦',p.x-40,p.y);fx('💦',p.x+10,p.y);
+    },1500);
+    setTimeout(function(){
+      mouth('smile');stuff=0;food=20;fat(0);mood('normal');love=Math.max(0,love-10);bars();
+      talk('Фууух… больше не буду столько есть 😵‍💫');busy=false;
+    },4300);
+    setTimeout(function(){cat.classList.remove('vomit')},5600);
+  }
+  function overfeed(){
+    if(stuff===1){fat(1);talk('Ой, я уже полная… 😳');snd('burp')}
+    else if(stuff===2){fat(2);talk('Мне как-то нехорошо… 😵');snd('burp')}
+    else{fat(3);vomit()}
+  }
+  function angry(){
+    busy=true;setSleep(false);mood('angry');tintR.style.opacity=.5;
+    talk('ХВАТИТ МИГАТЬ СВЕТОМ! 😾');act('angry',4200);snd('growl');
+    var n=0,iv=setInterval(function(){var p=pos(.5,.2);fx(n%2?'💢':'💨',p.x+(n%2?64:-64),p.y);if(++n>10)clearInterval(iv)},380);
+    setTimeout(function(){
+      tintR.style.opacity=0;mood('normal');talk('Фыр… ладно, прощаю 😼');
+      love=Math.max(0,love-8);bars();busy=false;sleepLog=[];
+    },4300);
+  }
+  var A={
+    pet:function(){wake();mood('happy',2400);act('petting',2200);showHand('pet');burst('💗',5);addLove(6);talk(pick('pet'))},
+    kiss:function(){wake();mood('kiss',1900);act('kiss',1800);var p=pos(.5,.57);fx('💋',p.x-17,p.y,'kiss');
+      setTimeout(function(){burst('😘',3);burst('💕',4)},500);addLove(8);talk(pick('kiss'))},
+    scratch:function(){wake();mood('happy',2300);act('scratching',2200);showHand('scr');burst('✨',5);addLove(6);talk(pick('scratch'))},
+    paw:function(){wake();mood('happy',2400);act('paw',2300);var p=pos(.86,.62);fx('🖐️',p.x-15,p.y);burst('🐾',4);addLove(5);talk(pick('paw'))},
+    feed:function(){
+      wake();var p=pos(.5,.57);fx('🐟',p.x-15,p.y-14,'drop');mouth('open',1000);
+      setTimeout(function(){act('chew',1500);mood('happy',1700);burst('😋',2)},650);
+      if(food<100){food=Math.min(100,food+25);bars();addLove(4);talk(pick('feed'))}
+      else{stuff++;overfeed()}
+    },
+    play:function(){wake();mood('happy',3300);act('play',3300);ball.className='ball go';setTimeout(function(){ball.className='ball'},3300);burst('🧶',4);addLove(6);talk(pick('play'))},
+    hug:function(){wake();mood('happy',2700);act('hug',2500);burst('🤗',3);burst('💞',4);addLove(8);talk(pick('hug'))},
+    dance:function(){
+      wake();var id=tok;if(!musicOn)setMusic(true);
+      mood('happy',8800);stage.classList.add('disco');talk(pick('dance'));addLove(7);
+      act('twirl',850);
+      setTimeout(function(){if(tok!==id)return;act('dance',6000);
+        danceIv=setInterval(function(){burst(Math.random()<.5?'🎵':'🎶',1)},600)},850);
+      setTimeout(function(){if(tok!==id)return;clearInterval(danceIv);act('twirl',850);stage.classList.remove('disco');burst('🎉',4)},6850);
+    },
+    sleep:function(){
+      var now=Date.now();sleepLog.push(now);sleepLog=sleepLog.filter(function(t){return now-t<9000});
+      snd('switch');
+      if(sleepLog.length>=4){angry();return}
+      setSleep(!asleep);
+      if(asleep){talk(pick('sleep'));burst('💤',5);snd('lullaby')}
+      else{talk(sleepLog.length===3?'Эй, ну хватит… 😒':pick('wake'));burst('☀️',3);snd('wakeup')}
+    }
+  };
+  document.querySelectorAll('button[data-a]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var a=b.dataset.a;
+      if(busy){talk(cat.dataset.mood==='angry'?'Не трогай меня! 😾':'Подожди… мне плохо 🤢');return}
+      tok++;clearInterval(danceIv);stage.classList.remove('disco');
+      if(a!=='sleep')snd(a);
+      A[a]();
+    });
+  });
+  cat.addEventListener('click',function(){if(busy)return;tok++;clearInterval(danceIv);stage.classList.remove('disco');snd('pet');A.pet()});
+  cat.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();cat.click()}});
+
+  /* ---- звук и музыка (синтез в браузере) ---- */
+  var AC=null,master=null,NB=null,sfxOn=true,musicOn=false,mTimer=null,mNext=0,mStep=0,mTouched=false;
+  function ctx(){
+    if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.9;master.connect(AC.destination)}catch(e){AC=null}}
+    if(AC&&AC.state==='suspended')AC.resume();
+    return AC;
+  }
+  function tone(f,t,d,type,v,f2){
+    var o=AC.createOscillator(),g=AC.createGain();
+    o.type=type||'sine';o.frequency.setValueAtTime(f,t);
+    if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v||.15,t+.015);
+    g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.connect(g);g.connect(master);o.start(t);o.stop(t+d+.05);
+  }
+  function noise(t,d,v,fq){
+    if(!NB){NB=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);var a=NB.getChannelData(0);for(var i=0;i<a.length;i++)a[i]=Math.random()*2-1}
+    var s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();
+    s.buffer=NB;s.loop=true;f.type='lowpass';f.frequency.value=fq;
+    g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+d+.05);
+  }
+  function purr(t,d,v){
+    var o=AC.createOscillator(),f=AC.createBiquadFilter(),g=AC.createGain(),l=AC.createOscillator(),lg=AC.createGain();
+    o.type='sawtooth';o.frequency.value=62;f.type='lowpass';f.frequency.value=260;l.frequency.value=24;lg.gain.value=v;
+    g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.25);g.gain.setValueAtTime(v,t+d-.3);g.gain.linearRampToValueAtTime(.0001,t+d);
+    l.connect(lg);lg.connect(g.gain);o.connect(f);f.connect(g);g.connect(master);
+    o.start(t);l.start(t);o.stop(t+d+.05);l.stop(t+d+.05);
+  }
+  function meow(t,k){tone(500*k,t,.14,'triangle',.16,800*k);tone(800*k,t+.12,.38,'triangle',.16,420*k)}
+  function snd(k){
+    if(!sfxOn||!ctx())return;
+    var t=AC.currentTime+.02,i;
+    if(k==='pet'){purr(t,1.6,.12)}
+    else if(k==='kiss'){tone(900,t,.07,'sine',.22,1600);tone(1400,t+.09,.06,'sine',.18,2000);tone(660,t+.25,.2,'triangle',.1,880)}
+    else if(k==='scratch'){purr(t,1.4,.1);for(i=0;i<5;i++)tone(1800+i*140,t+i*.12,.1,'sine',.05)}
+    else if(k==='paw'){[784,988,1319].forEach(function(f,j){tone(f,t+j*.1,.35,'triangle',.14)})}
+    else if(k==='feed'){meow(t,1.1);for(i=0;i<5;i++)tone(200,t+.7+i*.14,.07,'square',.07,100)}
+    else if(k==='play'){for(i=0;i<5;i++)tone(400+i*110,t+i*.09,.12,'triangle',.13,600+i*110);meow(t+.5,1.3)}
+    else if(k==='hug'){purr(t,1.8,.12);tone(1046,t+.2,.4,'sine',.08)}
+    else if(k==='dance'){for(i=0;i<8;i++)tone(i%2?523:659,t+i*.16,.14,'triangle',.12);meow(t+1.3,1.2)}
+    else if(k==='switch'){tone(1900,t,.03,'square',.12,900);noise(t,.05,.2,3000)}
+    else if(k==='lullaby'){[659,587,523,392].forEach(function(f,j){tone(f,t+.1+j*.3,.7,'sine',.1)})}
+    else if(k==='wakeup'){[523,659,784].forEach(function(f,j){tone(f,t+.1+j*.12,.4,'triangle',.12)});meow(t+.5,1.1)}
+    else if(k==='burp'){tone(110,t,.35,'sawtooth',.14,60)}
+    else if(k==='retch'){for(i=0;i<4;i++){tone(150-i*15,t+i*.3,.22,'sawtooth',.14,70);noise(t+i*.3,.2,.12,500)}}
+    else if(k==='splat'){noise(t,.6,.35,900);tone(200,t,.3,'sine',.2,60)}
+    else if(k==='growl'){tone(120,t+.1,1.3,'sawtooth',.16,70);tone(126,t+.1,1.3,'sawtooth',.1,75);noise(t+.1,.5,.1,1200);tone(650,t+1.4,.5,'sawtooth',.1,300)}
+  }
+  var ARP=[[261.6,329.6,392,329.6,523.3,392,329.6,392],[220,261.6,329.6,261.6,440,329.6,261.6,329.6],[174.6,220,261.6,220,349.2,261.6,220,261.6],[196,246.9,293.7,246.9,392,293.7,246.9,293.7]];
+  var MEL=[[659,0,784,0,659,0,587,0],[523,0,659,0,880,0,784,0],[698,0,880,0,784,0,698,0],[587,0,784,0,659,0,587,523]];
+  var BASS=[130.8,110,87.3,98];
+  function bell(f,t,d,v){tone(f,t,d,'sine',v);tone(f*2,t,d*.6,'sine',v*.25)}
+  function sched(){
+    if(!musicOn||!AC)return;
+    while(mNext<AC.currentTime+.5){
+      var b=Math.floor(mStep/8)%4,i=mStep%8;
+      bell(ARP[b][i],mNext,1,.05);
+      if(MEL[b][i])bell(MEL[b][i],mNext,1.2,.07);
+      if(i===0)tone(BASS[b],mNext,2.4,'sine',.09);
+      mNext+=.34;mStep++;
+    }
+  }
+  function setMusic(on){
+    if(on&&!ctx())return;
+    musicOn=on;musicBtn.setAttribute('aria-pressed',on);musicBtn.textContent=on?'🎵 Музыка: вкл':'🎵 Музыка: выкл';
+    clearInterval(mTimer);
+    if(on){mNext=AC.currentTime+.1;mTimer=setInterval(sched,120);sched()}
+  }
+  musicBtn.addEventListener('click',function(){mTouched=true;setMusic(!musicOn)});
+  sfxBtn.addEventListener('click',function(){sfxOn=!sfxOn;sfxBtn.setAttribute('aria-pressed',sfxOn);sfxBtn.textContent=sfxOn?'🔊 Звуки':'🔇 Без звуков'});
+  document.addEventListener('pointerdown',function(e){if(mTouched)return;mTouched=true;if(!e.target.closest('#musicBtn'))setMusic(true)});
+  document.addEventListener('visibilitychange',function(){
+    if(!AC)return;
+    if(document.hidden)AC.suspend();else{AC.resume();mNext=AC.currentTime+.1}
+  });
+
+  /* ---- оживление котика ---- */
+  document.addEventListener('pointermove',function(e){
+    if(asleep||busy)return;
+    var r=cat.getBoundingClientRect(),dx=(e.clientX-(r.left+r.width/2))/r.width,dy=(e.clientY-(r.top+r.height*.4))/r.height;
+    eyes.style.transform='translate('+Math.max(-1,Math.min(1,dx*2))*6+'px,'+Math.max(-1,Math.min(1,dy*2))*5+'px)';
+  });
+  function twitch(){
+    var e=Math.random()<.5?earL:earR;e.classList.add('tw');setTimeout(function(){e.classList.remove('tw')},400);
+    setTimeout(twitch,3000+Math.random()*4000);
+  }
+  setTimeout(twitch,2500);
+  function idle(){
+    var acting=ACTS.some(function(c){return cat.classList.contains(c)});
+    if(!asleep&&!busy&&!acting){
+      var k=['yawn','wash','look'][Math.floor(Math.random()*3)];
+      if(k==='yawn'){mood('sleep');mouth('open',1700);act('yawn',1800);setTimeout(function(){if(!asleep&&!busy)mood('normal')},1800)}
+      else act(k,2400);
+    }
+    setTimeout(idle,7000+Math.random()*6000);
+  }
+  setTimeout(idle,6000);
+  var bg=$('bgfx'),em=['💗','🌸','✨','💕','🩷'];
+  for(var n=0;n<14;n++){
+    var s=document.createElement('span');s.textContent=em[n%em.length];s.style.left=(Math.random()*100)+'%';
+    s.style.fontSize=(14+Math.random()*18)+'px';s.style.animationDuration=(12+Math.random()*14)+'s';
+    s.style.animationDelay=(-Math.random()*20)+'s';bg.appendChild(s);
+  }
+  setInterval(function(){
+    if(food>0){
+      food=Math.max(0,food-3);bars();
+      if(food<100&&stuff&&!busy){stuff=0;fat(0)}
+      if(food<=15&&!asleep&&!busy)talk(pick('hungry'));
+    }
+  },9000);
+  bars();
+})();
+</script>
+</body>
+</html>
